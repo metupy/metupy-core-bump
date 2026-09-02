@@ -1,0 +1,13 @@
+{
+    "name": "custom-plugin",
+    "version": "1.0.0",
+    "description": "Custom plugin for Metupy",
+    "author": "Your Name",
+    "url": "https://example.com",
+    "license": "MIT",
+    "dependencies": ["seo"],
+    "settings": {
+        "enabled": true,
+        "custom_setting": "value"
+    }
+}

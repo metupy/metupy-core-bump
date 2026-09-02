@@ -1,0 +1,171 @@
+<!-- metupy/studio/templates/dashboard/index.html -->
+{% extends "dashboard/layout.html" %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<div x-data="dashboardApp()" x-init="loadStats()">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
+        <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs sm:text-sm text-gray-600">Total Pages</p>
+                    <p class="text-xl sm:text-3xl font-bold text-gray-800" x-text="stats.pages?.total || 0"></p>
+                </div>
+                <div class="p-2 sm:p-3 bg-blue-100 rounded-lg">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs sm:text-sm text-gray-600">Published</p>
+                    <p class="text-xl sm:text-3xl font-bold text-gray-800" x-text="stats.pages?.published || 0"></p>
+                </div>
+                <div class="p-2 sm:p-3 bg-green-100 rounded-lg">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs sm:text-sm text-gray-600">Comments</p>
+                    <p class="text-xl sm:text-3xl font-bold text-gray-800" x-text="stats.comments?.total || 0"></p>
+                </div>
+                <div class="p-2 sm:p-3 bg-purple-100 rounded-lg">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs sm:text-sm text-gray-600">Active Plugins</p>
+                    <p class="text-xl sm:text-3xl font-bold text-gray-800" x-text="stats.plugins?.active || 0"></p>
+                </div>
+                <div class="p-2 sm:p-3 bg-orange-100 rounded-lg">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Pages -->
+        <div class="bg-white rounded-xl shadow-sm">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="font-semibold text-gray-800">Recent Pages</h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <template x-for="page in recentPages" :key="page.id">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-800" x-text="page.title"></p>
+                                <p class="text-xs text-gray-500" x-text="page.status"></p>
+                            </div>
+                            <div class="flex gap-2">
+                                <a :href="`/dashboard/pages/${page.id}`" class="text-blue-600 hover:text-blue-800">Edit</a>
+                                <button @click="deletePage(page.id)" class="text-red-600 hover:text-red-800">Delete</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="font-semibold text-gray-800">Quick Actions</h3>
+            </div>
+            <div class="p-6 grid grid-cols-2 gap-4">
+                <a href="/dashboard/pages/new" class="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition text-center">
+                    <svg class="w-8 h-8 mx-auto text-blue-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span class="text-sm font-medium text-gray-700">New Page</span>
+                </a>
+                <button @click="triggerBuild()" class="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+                    <svg class="w-8 h-8 mx-auto text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    <span class="text-sm font-medium text-gray-700">Rebuild Site</span>
+                </button>
+                <a href="/dashboard/themes" class="p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition text-center">
+                    <svg class="w-8 h-8 mx-auto text-purple-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                    </svg>
+                    <span class="text-sm font-medium text-gray-700">Themes</span>
+                </a>
+                <a href="/dashboard/plugins" class="p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition text-center">
+                    <svg class="w-8 h-8 mx-auto text-orange-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                    <span class="text-sm font-medium text-gray-700">Plugins</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function dashboardApp() {
+    return {
+        stats: {},
+        recentPages: [],
+        
+        async loadStats() {
+            const response = await fetch('/api/stats');
+            const data = await response.json();
+            if (data.success) {
+                this.stats = data.data;
+            }
+            
+            // Load recent pages
+            const pagesResponse = await fetch('/api/pages?per_page=5');
+            const pagesData = await pagesResponse.json();
+            if (pagesData.success) {
+                this.recentPages = pagesData.data;
+            }
+        },
+        
+        async deletePage(id) {
+            if (confirm('Are you sure?')) {
+                const response = await fetch(`/api/pages/${id}`, {
+                    method: 'DELETE',
+                });
+                const data = await response.json();
+                if (data.success) {
+                    this.loadStats();
+                }
+            }
+        },
+        
+        async triggerBuild() {
+            const response = await fetch('/api/build', {
+                method: 'POST',
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert('Build started!');
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

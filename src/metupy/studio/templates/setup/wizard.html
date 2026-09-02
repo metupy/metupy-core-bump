@@ -1,0 +1,280 @@
+<!-- metupy/studio/templates/setup/wizard.html -->
+{% extends "base.html" %}
+
+{% block title %}Setup Wizard - Metupy{% endblock %}
+
+{% block body %}
+<div x-data="setupWizard()" class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Header -->
+        <div class="bg-blue-600 p-6 sm:p-8 text-white">
+            <div class="flex flex-col sm:flex-row items-center gap-3 mb-4 text-center sm:text-left">
+                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold">Metupy Setup Wizard</h1>
+                    <p class="text-sm opacity-90">Markdown Engine Template Utilities Python</p>
+                </div>
+            </div>
+            <p class="text-sm opacity-80 text-center sm:text-left">Welcome! Let's configure your site in a few easy steps.</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="px-4 sm:px-8 pt-6">
+            <div class="flex items-center justify-between mb-8 overflow-x-auto">
+                <template x-for="(step, index) in steps" :key="index">
+                    <div class="flex items-center flex-shrink-0">
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base transition-all"
+                                 :class="currentStep >= index ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'">
+                                <span x-text="index + 1"></span>
+                            </div>
+                            <span class="text-[10px] sm:text-xs mt-2 font-medium whitespace-nowrap"
+                                  :class="currentStep >= index ? 'text-blue-600' : 'text-gray-500'"
+                                  x-text="step"></span>
+                        </div>
+                        <div x-show="index < steps.length - 1" class="w-8 sm:w-16 h-1 mx-1 sm:mx-2"
+                             :class="currentStep > index ? 'bg-blue-600' : 'bg-gray-200'"></div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Step Content -->
+        <div class="px-4 sm:px-8 pb-8">
+            <!-- Step 1: Basic Info -->
+            <div x-show="currentStep === 0" class="space-y-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Basic Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Site Name</label>
+                        <input type="text" x-model="setupData.site_name"
+                               class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="My Awesome Site">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Site URL</label>
+                        <input type="url" x-model="setupData.site_url"
+                               class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="https://example.com">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Site Description</label>
+                        <textarea x-model="setupData.site_description" rows="3"
+                                  class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Brief description of your site"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Database -->
+            <div x-show="currentStep === 1" class="space-y-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Database Configuration</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Database Type</label>
+                        <select x-model="setupData.db_type"
+                                class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="sqlite">SQLite</option>
+                            <option value="postgresql">PostgreSQL</option>
+                            <option value="mysql">MySQL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Host</label>
+                        <input type="text" x-model="setupData.db_host"
+                               class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="localhost">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Admin Account -->
+            <div x-show="currentStep === 2" class="space-y-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Admin Account</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                        <input type="text" x-model="setupData.admin_username"
+                               class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="admin">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" x-model="setupData.admin_email"
+                               class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="admin@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" x-model="setupData.admin_password"
+                               class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="Strong password">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                        <input type="password" x-model="setupData.admin_password_confirm"
+                               class="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="Confirm password">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Theme -->
+            <div x-show="currentStep === 3" class="space-y-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Choose Theme</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                    <template x-for="theme in themes" :key="theme.id">
+                        <div class="border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-lg"
+                             :class="setupData.theme === theme.id ? 'border-blue-600 bg-blue-50' : 'border-gray-200'"
+                             @click="setupData.theme = theme.id">
+                            <div class="h-32 rounded-lg mb-4 bg-gray-200"></div>
+                            <h3 class="font-semibold text-gray-800" x-text="theme.name"></h3>
+                            <p class="text-sm text-gray-600" x-text="theme.description"></p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Step 5: Installation -->
+            <div x-show="currentStep === 4" class="space-y-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Installation</h2>
+                <div x-show="!installing && !installComplete" class="bg-gray-50 rounded-xl p-4 sm:p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">Configuration Summary</h3>
+                    <div class="space-y-2 text-sm">
+                        <p><strong>Site Name:</strong> <span x-text="setupData.site_name"></span></p>
+                        <p><strong>Site URL:</strong> <span x-text="setupData.site_url"></span></p>
+                        <p><strong>Database:</strong> <span x-text="setupData.db_type"></span></p>
+                        <p><strong>Admin:</strong> <span x-text="setupData.admin_username"></span></p>
+                        <p><strong>Theme:</strong> <span x-text="setupData.theme"></span></p>
+                    </div>
+                </div>
+                
+                <div x-show="installing" class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    <p class="mt-4 text-gray-600">Installing Metupy...</p>
+                </div>
+
+                <div x-show="installComplete" class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Installation Complete!</h3>
+                    <p class="text-gray-600 mt-2">Metupy has been installed successfully.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="px-4 sm:px-8 py-4 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row justify-between gap-3">
+            <button x-show="currentStep > 0 && !installComplete" @click="currentStep--"
+                    class="w-full sm:w-auto px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                Back
+            </button>
+            <button x-show="currentStep < 4" @click="nextStep()"
+                    class="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                Next
+            </button>
+            <button x-show="currentStep === 4 && !installing && !installComplete" @click="startInstall()"
+                    class="w-full sm:w-auto px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                Start Installation
+            </button>
+            <button x-show="installComplete" @click="goToLogin()"
+                    class="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                Go to Login
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function setupWizard() {
+    return {
+        currentStep: 0,
+        installing: false,
+        installComplete: false,
+        steps: ['Basic Info', 'Database', 'Admin', 'Theme', 'Install'],
+        setupData: {
+            site_name: '',
+            site_url: '',
+            site_description: '',
+            db_type: 'sqlite',
+            db_host: 'localhost',
+            admin_username: '',
+            admin_email: '',
+            admin_password: '',
+            admin_password_confirm: '',
+            theme: 'default',
+        },
+        themes: [
+            { id: 'default', name: 'Default', description: 'Clean and simple design' },
+            { id: 'dark', name: 'Dark Mode', description: 'Modern dark theme' },
+            { id: 'minimal', name: 'Minimal', description: 'Minimalist approach' },
+        ],
+        
+        async nextStep() {
+            // Validate current step
+            if (this.currentStep === 0) {
+                if (!this.setupData.site_name || !this.setupData.site_url) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                await this.saveStep('step1', this.setupData);
+            } else if (this.currentStep === 1) {
+                await this.saveStep('step2', this.setupData);
+            } else if (this.currentStep === 2) {
+                if (this.setupData.admin_password !== this.setupData.admin_password_confirm) {
+                    alert('Passwords do not match');
+                    return;
+                }
+                await this.saveStep('step3', this.setupData);
+            } else if (this.currentStep === 3) {
+                await this.saveStep('step4', this.setupData);
+            }
+            
+            this.currentStep++;
+        },
+        
+        async saveStep(step, data) {
+            const response = await fetch(`/setup/${step}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            if (!result.success) {
+                alert(result.error || 'Error saving step');
+                return false;
+            }
+            return true;
+        },
+        
+        async startInstall() {
+            this.installing = true;
+            
+            const response = await fetch('/setup/complete', {
+                method: 'POST',
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                this.installing = false;
+                this.installComplete = true;
+            } else {
+                this.installing = false;
+                alert(result.error || 'Installation failed');
+            }
+        },
+        
+        goToLogin() {
+            window.location.href = '/login';
+        }
+    }
+}
+</script>
+{% endblock %}

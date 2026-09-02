@@ -1,0 +1,12 @@
+<!-- metupy/templates/blog.html -->
+{% extends "default.html" %}
+
+{% block content %}
+<h1>Blog</h1>
+{% for post in posts %}
+<article>
+    <h2><a href="{{ post.url }}">{{ post.seo_title }}</a></h2>
+    <p>{{ post.seo_description }}</p>
+</article>
+{% endfor %}
+{% endblock %}
