@@ -1,0 +1,162 @@
+/* ==========================================
+   PERADOCS CONTENT STYLES
+========================================== */
+.metu-docs-layout {
+  display: flex;
+  max-width: 1520px;
+  margin: 4rem auto 0 auto;
+  padding: 0 1.5rem;
+  gap: 2rem;
+}
+
+.metu-docs-content {
+  flex: 1;
+  max-width: 100%;
+  padding: 2.5rem 2rem;
+}
+
+.metu-docs-content h1 {
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  margin-top: 4rem;
+  margin-bottom: 0.5rem;
+}
+
+.metu-docs-content .metu-lead {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--metu-text-muted);
+  border-left: 3px solid var(--metu-yellow);
+  padding-left: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.metu-docs-content h2,
+.metu-docs-content h3 {
+  position: relative;
+  margin: 2.5rem 0 0.75rem 0;
+  display: flex;
+  align-items: center;
+  scroll-margin-top: 5rem;
+}
+
+.metu-docs-content p {
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  color: var(--metu-text-primary);
+}
+
+.metu-docs-content pre {
+  background-color: var(--metu-bg-input);
+  border: 1px solid var(--metu-border-color);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.metu-docs-content code {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  color: var(--metu-blue);
+}
+
+[data-theme="dark"] .metu-docs-content code {
+  color: var(--metu-yellow);
+}
+
+.metu-callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  background-color: var(--metu-bg-input);
+  border-left: 4px solid var(--metu-blue);
+}
+
+.metu-callout i {
+  font-size: 1.25rem;
+  color: var(--metu-blue);
+}
+
+[data-theme="dark"] .metu-callout {
+  border-left-color: var(--metu-yellow);
+}
+
+[data-theme="dark"] .metu-callout i {
+  color: var(--metu-yellow);
+}
+
+/* Page content (non-docs) */
+.metu-page-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Doc footer nav */
+.metu-doc-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--metu-border-color);
+}
+
+.metu-nav-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 48%;
+  padding: 0.85rem 1.15rem;
+  border: 1px solid var(--metu-border-color);
+  border-radius: 0.6rem;
+  background-color: var(--metu-bg-primary);
+  transition: all 0.25s ease;
+}
+
+.metu-prev-card {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.metu-next-card {
+  align-items: flex-end;
+  text-align: right;
+  margin-left: auto;
+}
+
+.metu-nav-card:hover {
+  border-color: var(--metu-blue);
+  background-color: var(--metu-bg-input);
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .metu-nav-card:hover {
+  border-color: var(--metu-yellow);
+}
+
+.metu-nav-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--metu-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.metu-nav-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--metu-blue);
+}
+
+[data-theme="dark"] .metu-nav-title {
+  color: var(--metu-yellow);
+}

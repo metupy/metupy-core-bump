@@ -1,55 +1,70 @@
-# metupy/models/page.py
-"""Page model dengan UUID."""
+"""
+Page model for Metupy.
+
+Stores CMS pages with UUID4 primary keys.
+"""
+
+import uuid
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 from peewee import (
-    CharField, TextField, BooleanField, IntegerField, 
-    ForeignKeyField, UUIDField, DateTimeField
+    CharField,
+    TextField,
+    BooleanField,
+    IntegerField,
+    ForeignKeyField,
+    UUIDField,
+    DateTimeField,
 )
+
 from metupy.models.base import BaseModel
-from metupy.models.user import User
-import uuid, datetime
+
 
 class PageModel(BaseModel):
-    """Page model for CMS."""
-    
+    """CMS page model."""
+
     id = UUIDField(primary_key=True, default=uuid.uuid4)
     title = CharField(max_length=200)
     slug = CharField(unique=True, max_length=200)
     content = TextField()
     template = CharField(max_length=100, default='default.html')
-    status = CharField(max_length=20, default='draft')  # draft, published, archived
-    author = ForeignKeyField(User, backref='pages', null=True, field='id')
-    parent = ForeignKeyField('self', null=True, backref='children', field='id')
+    status = CharField(max_length=20, default='draft')
+    author_id = UUIDField(null=True)
+    parent_id = UUIDField(null=True)
     order = IntegerField(default=0)
     is_homepage = BooleanField(default=False)
     meta_description = CharField(max_length=500, null=True)
     meta_keywords = CharField(max_length=500, null=True)
-    
-    # Additional fields
-    content_type = CharField(max_length=50, default='page')  # page, post, docs, etc.
+    content_type = CharField(max_length=50, default='page')
     featured_image = CharField(max_length=500, null=True)
     is_published = BooleanField(default=False)
     published_at = DateTimeField(null=True)
-    
+
     class Meta:
         table_name = 'pages'
-        
-    def publish(self):
-        """Publish page."""
+
+    def publish(self) -> None:
+        """Publish the page."""
         self.status = 'published'
         self.is_published = True
         self.published_at = datetime.now()
         self.save()
-        
-    def unpublish(self):
-        """Unpublish page."""
+
+    def unpublish(self) -> None:
+        """Unpublish the page."""
         self.status = 'draft'
         self.is_published = False
         self.published_at = None
         self.save()
-        
-    def to_dict(self):
-        """Convert to dictionary."""
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert page to dictionary.
+
+        Returns:
+            Dictionary representation.
+        """
         return {
             'id': str(self.id),
             'title': self.title,
@@ -57,8 +72,8 @@ class PageModel(BaseModel):
             'content': self.content,
             'template': self.template,
             'status': self.status,
-            'author': str(self.author.id) if self.author else None,
-            'parent': str(self.parent.id) if self.parent else None,
+            'author_id': str(self.author_id) if self.author_id else None,
+            'parent_id': str(self.parent_id) if self.parent_id else None,
             'order': self.order,
             'is_homepage': self.is_homepage,
             'meta_description': self.meta_description,

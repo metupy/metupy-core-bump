@@ -1,177 +1,357 @@
-# metupy/parsers/pym_parser.py
-"""PYM Parser - Parse .pym files (Python + Markdown + Jinja2)."""
+"""
+PYM parser for Metupy.
 
-import ast
+Parses .pym files which combine Python code blocks,
+Markdown content, and Jinja2 templates.
+"""
+
 import re
 from pathlib import Path
-from typing import Dict, Any, Optional, List
-import yaml
-import markdown
-from jinja2 import Template, TemplateSyntaxError
+from typing import Any, Dict, List, Optional, Tuple
+
+from metupy.utils.helpers import read_file
+
 
 class PYMParser:
-    """Parser for .pym files."""
-    
+    """Parser for .pym files (Python + Markdown + Jinja2)."""
+
     def __init__(self, engine):
+        """
+        Initialize PYMParser.
+
+        Args:
+            engine: MetupyEngine instance.
+        """
         self.engine = engine
-        self.template_env = engine.template_env
-        self.markdown_parser = engine.markdown_parser
-        
+        self.macro_manager = None
+
+        if hasattr(engine, 'macro_manager') and engine.macro_manager:
+            self.macro_manager = engine.macro_manager
+
     def parse(self, content: str) -> Dict[str, Any]:
-        """Parse .pym file content."""
-        # Parse frontmatter
+        """
+        Parse .pym file content.
+
+        Args:
+            content: Raw .pym content string.
+
+        Returns:
+            Dictionary with metadata, content, and context.
+        """
         metadata, body = self._parse_frontmatter(content)
-        
-        # Parse Python code blocks
-        python_context = self._parse_python_blocks(body)
-        
-        # Parse markdown content
-        markdown_html = self._parse_markdown(body)
-        
-        # Parse Jinja2 templates
-        rendered_content = self._render_jinja2(markdown_html, python_context)
-        
+
+        body = self._process_macros(body)
+        body = self._process_functions(body)
+
+        python_context = self._process_python_blocks(body)
+
         return {
             'metadata': metadata,
             'context': python_context,
-            'content': rendered_content,
-            'raw_content': body,
-            'markdown_html': markdown_html,
+            'content': body,
         }
-        
-    def _parse_frontmatter(self, content: str) -> tuple:
-        """Parse frontmatter from content."""
+
+    def parse_file(self, file_path: Path) -> Dict[str, Any]:
+        """
+        Parse .pym file from path.
+
+        Args:
+            file_path: Path to .pym file.
+
+        Returns:
+            Dictionary with parsed content.
+        """
+        content = read_file(file_path)
+        return self.parse(content)
+
+    def _parse_frontmatter(self, content: str) -> Tuple[Dict, str]:
+        """
+        Parse YAML frontmatter from content.
+
+        Args:
+            content: Raw content string.
+
+        Returns:
+            Tuple of (metadata, body).
+        """
         metadata = {}
         body = content
-        
-        # YAML frontmatter
+
         if content.startswith('---'):
-            match = re.match(r'^---\n(.*?)\n---\n?(.*)$', content, re.DOTALL)
-            if match:
+            parts = content.split('---', 2)
+            if len(parts) >= 3:
+                import yaml
                 try:
-                    metadata = yaml.safe_load(match.group(1)) or {}
-                    body = match.group(2)
-                except yaml.YAMLError as e:
-                    print(f"Error parsing YAML frontmatter: {e}")
-                    
-        # Python frontmatter
-        elif content.startswith('```python'):
-            match = re.match(r'^```python\n(.*?)\n```\n?(.*)$', content, re.DOTALL)
-            if match:
-                try:
-                    exec_globals = {}
-                    exec(match.group(1), exec_globals)
-                    metadata = {
-                        k: v for k, v in exec_globals.items()
-                        if not k.startswith('__') and k.isupper()
-                    }
-                    body = match.group(2)
-                except Exception as e:
-                    print(f"Error parsing Python frontmatter: {e}")
-                    
+                    metadata = yaml.safe_load(parts[1]) or {}
+                    body = parts[2]
+                except (yaml.YAMLError, ValueError):
+                    pass
+
         return metadata, body
-        
-    def _parse_python_blocks(self, content: str) -> Dict[str, Any]:
-        """Parse and execute Python code blocks."""
-        context = {}
-        
-        # Find Python code blocks
-        pattern = r'```python\n(.*?)\n```'
-        matches = re.finditer(pattern, content, re.DOTALL)
-        
-        for match in matches:
-            python_code = match.group(1)
-            exec_context = self._execute_python(python_code)
-            context.update(exec_context)
-            
-        # Also find inline Python expressions
-        context.update(self._parse_inline_python(content))
-        
-        return context
-        
-    def _parse_inline_python(self, content: str) -> Dict[str, Any]:
-        """Parse inline Python expressions {{ python_code }}."""
-        context = {}
-        
-        # Find inline Python
-        pattern = r'\{\{\s*python\s+(.*?)\s*\}\}'
-        matches = re.finditer(pattern, content, re.DOTALL)
-        
-        for match in matches:
-            python_code = match.group(1)
-            try:
-                exec_globals = {}
-                exec(python_code, exec_globals)
-                context.update({
-                    k: v for k, v in exec_globals.items()
-                    if not k.startswith('__')
-                })
-            except Exception as e:
-                print(f"Error executing inline Python: {e}")
-                
-        return context
-        
-    def _parse_markdown(self, content: str) -> str:
-        """Parse markdown content."""
-        # Remove Python code blocks
-        content = re.sub(r'```python\n.*?\n```', '', content, flags=re.DOTALL)
-        
-        # Remove inline Python
-        content = re.sub(r'\{\{\s*python\s+.*?\s*\}\}', '', content, flags=re.DOTALL)
-        
-        # Convert markdown to HTML
-        return self.markdown_parser.convert(content)
-        
-    def _render_jinja2(self, content: str, context: Dict[str, Any]) -> str:
-        """Render Jinja2 templates."""
-        try:
-            template = self.template_env.from_string(content)
-            return template.render(**context)
-        except TemplateSyntaxError as e:
-            print(f"Jinja2 syntax error: {e}")
+
+    def _process_macros(self, content: str) -> str:
+        """
+        Process macro calls in content.
+
+        Pattern: {{ macro('name', key=value, ...) }}
+
+        Args:
+            content: Content with macro calls.
+
+        Returns:
+            Content with macros replaced.
+        """
+        if not self.macro_manager:
             return content
-        except Exception as e:
-            print(f"Error rendering template: {e}")
+
+        pattern = r"\{\{\s*macro\(['\"]([^'\"]+)['\"](.*?)\)\s*\}\}"
+
+        def replace_macro(match):
+            macro_name = match.group(1)
+            args_str = match.group(2).strip()
+
+            context = self._parse_kwargs(args_str)
+            return self.macro_manager.render_macro(macro_name, context)
+
+        return re.sub(pattern, replace_macro, content, flags=re.DOTALL)
+
+    def _process_functions(self, content: str) -> str:
+        """
+        Process function calls in content.
+
+        Pattern: {{ function('name', args...) }}
+
+        Args:
+            content: Content with function calls.
+
+        Returns:
+            Content with function results.
+        """
+        if not self.macro_manager:
             return content
-            
-    def _execute_python(self, code: str) -> Dict[str, Any]:
-        """Execute Python code safely."""
+
+        pattern = r"\{\{\s*function\(['\"]([^'\"]+)['\"](.*?)\)\s*\}\}"
+
+        def replace_function(match):
+            func_name = match.group(1)
+            args_str = match.group(2).strip()
+
+            args, kwargs = self._parse_args(args_str)
+            result = self.macro_manager.call_function(func_name, *args, **kwargs)
+            return str(result)
+
+        return re.sub(pattern, replace_function, content, flags=re.DOTALL)
+
+    def _process_python_blocks(self, content: str) -> Dict[str, Any]:
+        """
+        Process Python code blocks in content.
+
+        Pattern: ```pym ... ```
+
+        Args:
+            content: Content with Python blocks.
+
+        Returns:
+            Dictionary of variables from Python execution.
+        """
+        context = {}
+
+        pattern = r'```pym\n(.*?)\n```'
+        matches = re.finditer(pattern, content, re.DOTALL)
+
+        for match in matches:
+            code = match.group(1)
+
+            if hasattr(self.engine, 'pym_executor') and self.engine.pym_executor:
+                result = self.engine.pym_executor.execute_block(code, context)
+                if isinstance(result, dict):
+                    context.update(result)
+            else:
+                exec_context = self._fallback_execute(code, context)
+                context.update(exec_context)
+
+        return context
+
+    def _fallback_execute(self, code: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Fallback Python execution without executor.
+
+        Uses RestrictedPython if available.
+
+        Args:
+            code: Python code to execute.
+            context: Current context.
+
+        Returns:
+            Dictionary of new variables.
+        """
+        result = {}
+
         try:
-            # Create execution context
+            from RestrictedPython import compile_restricted, safe_builtins
+            from RestrictedPython.Eval import default_guarded_getitem
+
             exec_globals = {
-                '__builtins__': __builtins__,
+                '__builtins__': safe_builtins,
+                '_getitem_': default_guarded_getitem,
+                '_getattr_': getattr,
+                '_setattr_': setattr,
+            }
+
+            import json as json_module
+            import re as re_module
+            import math as math_module
+            from datetime import datetime as dt_module
+
+            exec_globals.update({
+                'json': json_module,
+                're': re_module,
+                'math': math_module,
+                'datetime': dt_module,
                 'engine': self.engine,
-                'config': self.engine.config,
-                'site': self.engine.site_context,
-            }
-            
-            exec(code, exec_globals)
-            
-            # Extract variables
-            return {
-                k: v for k, v in exec_globals.items()
-                if not k.startswith('__') and k not in ['engine', 'config', 'site']
-            }
+                'site': getattr(self.engine, 'site_context', {}),
+            })
+
+            exec_globals.update(context)
+
+            bytecode = compile_restricted(code, '<pym>', 'exec')
+            exec(bytecode, exec_globals, exec_globals)
+
+            for k, v in exec_globals.items():
+                if not k.startswith('__') and k not in ['engine', 'site']:
+                    result[k] = v
+
+        except ImportError:
+            result['__error__'] = 'RestrictedPython not installed'
         except Exception as e:
-            print(f"Error executing Python code: {e}")
-            return {}
-            
-    def parse_file(self, file_path: Path) -> Dict[str, Any]:
-        """Parse .pym file from path."""
-        content = file_path.read_text(encoding='utf-8')
-        return self.parse(content)
-        
-    def extract_metadata(self, content: str) -> Dict[str, Any]:
-        """Extract only metadata from content."""
-        metadata, _ = self._parse_frontmatter(content)
-        return metadata
-        
-    def extract_python_context(self, content: str) -> Dict[str, Any]:
-        """Extract Python context from content."""
-        _, body = self._parse_frontmatter(content)
-        return self._parse_python_blocks(body)
-        
-    def extract_markdown(self, content: str) -> str:
-        """Extract markdown content."""
-        _, body = self._parse_frontmatter(content)
-        return self._parse_markdown(body)
+            result['__error__'] = str(e)
+
+        return result
+
+    def _parse_kwargs(self, args_str: str) -> Dict[str, Any]:
+        """
+        Parse keyword arguments from string.
+
+        Args:
+            args_str: Arguments string like "key=value, key2=value2".
+
+        Returns:
+            Dictionary of key-value pairs.
+        """
+        context = {}
+
+        if not args_str.strip():
+            return context
+
+        parts = self._split_args(args_str)
+
+        for part in parts:
+            part = part.strip()
+            if '=' in part:
+                key, value = part.split('=', 1)
+                context[key.strip()] = self._parse_value(value.strip())
+
+        return context
+
+    def _parse_args(self, args_str: str) -> Tuple[List, Dict]:
+        """
+        Parse positional and keyword arguments.
+
+        Args:
+            args_str: Arguments string.
+
+        Returns:
+            Tuple of (positional_args, keyword_args).
+        """
+        args = []
+        kwargs = {}
+
+        if not args_str.strip():
+            return args, kwargs
+
+        parts = self._split_args(args_str)
+
+        for part in parts:
+            part = part.strip()
+            if '=' in part:
+                key, value = part.split('=', 1)
+                kwargs[key.strip()] = self._parse_value(value.strip())
+            else:
+                args.append(self._parse_value(part))
+
+        return args, kwargs
+
+    def _split_args(self, args_str: str) -> List[str]:
+        """
+        Split arguments by comma, respecting quotes.
+
+        Args:
+            args_str: Arguments string.
+
+        Returns:
+            List of argument strings.
+        """
+        parts = []
+        current = ''
+        in_quote = False
+        quote_char = None
+
+        for char in args_str:
+            if char in ["'", '"']:
+                if not in_quote:
+                    in_quote = True
+                    quote_char = char
+                elif char == quote_char:
+                    in_quote = False
+                    quote_char = None
+
+            if char == ',' and not in_quote:
+                parts.append(current)
+                current = ''
+            else:
+                current += char
+
+        if current.strip():
+            parts.append(current)
+
+        return parts
+
+    def _parse_value(self, value: str) -> Any:
+        """
+        Parse a value string to appropriate Python type.
+
+        Args:
+            value: Value string.
+
+        Returns:
+            Parsed Python value.
+        """
+        value = value.strip()
+
+        if value.startswith("'") and value.endswith("'"):
+            return value[1:-1]
+        if value.startswith('"') and value.endswith('"'):
+            return value[1:-1]
+
+        try:
+            return int(value)
+        except ValueError:
+            pass
+
+        try:
+            return float(value)
+        except ValueError:
+            pass
+
+        if value.lower() == 'true':
+            return True
+        if value.lower() == 'false':
+            return False
+        if value.lower() in ['none', 'null']:
+            return None
+
+        if value.startswith('[') and value.endswith(']'):
+            items = value[1:-1].split(',')
+            return [self._parse_value(item) for item in items if item.strip()]
+
+        return value

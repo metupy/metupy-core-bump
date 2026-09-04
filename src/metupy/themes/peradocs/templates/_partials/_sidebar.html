@@ -1,0 +1,37 @@
+<aside class="metu-docs-sidebar">
+    {% for group in sidebar_groups %}
+    <div class="metu-sidebar-group">
+        <h3>{{ group.title }}</h3>
+        <ul>
+            {% for item in group.items %}
+            {% if item.is_folder %}
+            <li class="metu-sidebar-folder">
+                <button class="metu-folder-trigger" data-folder="{{ item.title | slugify }}">
+                    <i class="bx bx-folder"></i>
+                    <span>{{ item.title }}</span>
+                    <i class="bx bx-chevron-down metu-folder-arrow"></i>
+                </button>
+                <ul class="metu-folder-items" id="folder-{{ item.title | slugify }}">
+                    {% for child in item.children %}
+                    <li>
+                        <a href="{{ child.url }}" class="{% if child.current %}metu-active{% endif %}">
+                            <i class="bx bx-file"></i>
+                            {{ child.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% else %}
+            <li>
+                <a href="{{ item.url }}" class="{% if item.current %}metu-active{% endif %}">
+                    <i class="bx bx-file"></i>
+                    {{ item.title }}
+                </a>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</aside>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default('en') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | {{ site.name }}</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="/peradocs.css">
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/sidebar.css">
+    <link rel="stylesheet" href="/toc.css">
+    <link rel="stylesheet" href="/content.css">
+    <link rel="stylesheet" href="/search.css">
+    <link rel="stylesheet" href="/footer.css">
+    <link rel="stylesheet" href="/responsive.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    {% include "_partials/_header.html" %}
+
+    {% block content %}{% endblock %}
+
+    {% include "_partials/_search_modal.html" %}
+
+    <script src="/peradocs.js"></script>
+    <script src="/header.js"></script>
+    <script src="/sidebar.js"></script>
+    <script src="/toc.js"></script>
+    <script src="/search.js"></script>
+</body>
+</html>

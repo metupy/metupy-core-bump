@@ -1,49 +1,69 @@
-# metupy/models/theme.py
-"""Theme model dengan UUID."""
+"""
+Theme model for Metupy.
+
+Stores theme metadata with UUID4 primary keys.
+"""
+
+import json
+import uuid
+from typing import Any, Dict, List, Optional
 
 from peewee import CharField, TextField, BooleanField, UUIDField
+
 from metupy.models.base import BaseModel
-import uuid
-import json
+
 
 class ThemeModel(BaseModel):
-    """Theme model."""
-    
+    """Theme metadata model."""
+
     id = UUIDField(primary_key=True, default=uuid.uuid4)
     name = CharField(unique=True, max_length=200)
     version = CharField(max_length=50)
     description = TextField()
     author = CharField(max_length=200)
     is_active = BooleanField(default=False)
-    settings = TextField(null=True)  # JSON string
-    
-    # Additional fields
+    settings = TextField(null=True)
     preview_image = CharField(max_length=500, null=True)
-    tags = TextField(null=True)  # JSON array
-    dependencies = TextField(null=True)  # JSON array
-    
+    tags = TextField(null=True)
+
     class Meta:
         table_name = 'themes'
-        
-    def get_settings(self) -> dict:
-        """Get settings as dictionary."""
+
+    def get_settings(self) -> Dict[str, Any]:
+        """
+        Get theme settings.
+
+        Returns:
+            Settings dictionary.
+        """
         if self.settings:
-            return json.loads(self.settings)
+            try:
+                return json.loads(self.settings)
+            except json.JSONDecodeError:
+                return {}
         return {}
-        
-    def set_settings(self, settings: dict):
-        """Set settings from dictionary."""
-        self.settings = json.dumps(settings)
-        self.save()
-        
-    def get_tags(self) -> list:
-        """Get tags list."""
+
+    def get_tags(self) -> List[str]:
+        """
+        Get theme tags.
+
+        Returns:
+            List of tag strings.
+        """
         if self.tags:
-            return json.loads(self.tags)
+            try:
+                return json.loads(self.tags)
+            except json.JSONDecodeError:
+                return []
         return []
-        
-    def to_dict(self):
-        """Convert to dictionary."""
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert theme to dictionary.
+
+        Returns:
+            Dictionary representation.
+        """
         return {
             'id': str(self.id),
             'name': self.name,
@@ -54,6 +74,4 @@ class ThemeModel(BaseModel):
             'settings': self.get_settings(),
             'preview_image': self.preview_image,
             'tags': self.get_tags(),
-            'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat(),
         }

@@ -1,0 +1,36 @@
+<header>
+    <div class="metu-header-container">
+        <div class="metu-left-action">
+            <button id="metu-menu-toggle" class="metu-icon-btn metu-mobile-menu-btn" aria-label="Toggle Navigation">
+                <i class="bx bx-menu" id="metu-menu-icon"></i>
+            </button>
+            <div class="metu-brand">
+                <a href="/">
+                    <img src="/favicon.png" alt="{{ site.name }} Logo" width="32" height="32">
+                    <span>{{ site.name }}</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="metu-nav-overlay" id="metu-nav-overlay"></div>
+
+        {% include "_partials/_navbar.html" %}
+
+        <div class="metu-right-action">
+            <button class="metu-desktop-search" id="metu-search-modal-trigger">
+                <i class="bx bx-search"></i>
+                <span>Search docs...</span>
+                <kbd class="metu-search-shortcut">Ctrl K</kbd>
+            </button>
+            <button class="metu-icon-btn metu-mobile-search-btn" id="metu-mobile-search-trigger" aria-label="Search">
+                <i class="bx bx-search"></i>
+            </button>
+            <button id="metu-theme-toggle" class="metu-icon-btn" aria-label="Toggle Theme">
+                <i class="bx bx-moon" id="metu-theme-icon"></i>
+            </button>
+            <button id="metu-toc-toggle" class="metu-icon-btn metu-mobile-toc-btn" aria-label="Toggle TOC">
+                <i class="bx bx-list-ul"></i>
+            </button>
+        </div>
+    </div>
+</header>

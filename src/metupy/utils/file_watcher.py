@@ -1,91 +1,112 @@
-# metupy/utils/file_watcher.py
-"""File watcher untuk livereload."""
+"""
+File watcher for Metupy.
 
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+Watches files for changes and triggers callbacks.
+Used for live reload functionality.
+"""
+
+import time
 from pathlib import Path
 from typing import Callable, Optional, Set
-import time
+
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
 
 class FileWatcher:
-    """Watches files for changes."""
-    
+    """Watch files for changes."""
+
     def __init__(self, callback: Callable, debounce_time: float = 0.5):
+        """
+        Initialize FileWatcher.
+
+        Args:
+            callback: Function to call on file change.
+            debounce_time: Minimum time between callbacks.
+        """
         self.callback = callback
         self.debounce_time = debounce_time
-        self.observer = None
-        self.event_handler = None
+        self.observer: Optional[Observer] = None
+        self.event_handler: Optional[FileSystemEventHandler] = None
         self.watched_dirs: Set[Path] = set()
-        self.last_event = 0        
-    def watch(self, directory: Path, recursive: bool = True):
-        """Watch directory for changes."""
+        self.last_event = 0
+
+    def watch(self, directory: Path, recursive: bool = True) -> None:
+        """
+        Watch directory for changes.
+
+        Args:
+            directory: Directory to watch.
+            recursive: Watch subdirectories.
+        """
         if directory.exists():
             self.watched_dirs.add(directory)
-            
+
             if self.observer:
                 self.observer.schedule(
                     self.event_handler,
                     str(directory),
                     recursive=recursive
                 )
-                
-    def unwatch(self, directory: Path):
-        """Stop watching directory."""
-        if directory in self.watched_dirs:
-            self.watched_dirs.remove(directory)
-            
-            if self.observer:
-                self.observer.unschedule(str(directory))
-                
-    def start(self):
-        """Start watching."""
+
+    def start(self) -> None:
+        """Start watching files."""
         self.event_handler = FileChangeHandler(self)
         self.observer = Observer()
-        
+
         for directory in self.watched_dirs:
             self.observer.schedule(
                 self.event_handler,
                 str(directory),
                 recursive=True
             )
-            
+
         self.observer.start()
-        
-    def stop(self):
-        """Stop watching."""
+
+    def stop(self) -> None:
+        """Stop watching files."""
         if self.observer:
             self.observer.stop()
             self.observer.join()
-            
-    def _handle_event(self, event):
-        """Handle file event."""
+
+    def _handle_event(self, event) -> None:
+        """
+        Handle file system event.
+
+        Args:
+            event: File system event.
+        """
         if event.is_directory:
             return
-            
-        # Debounce
+
         current_time = time.time()
         if current_time - self.last_event < self.debounce_time:
             return
-            
+
         self.last_event = current_time
-        
-        # Call callback
         self.callback(event)
-        
+
+
 class FileChangeHandler(FileSystemEventHandler):
-    """Handles file system events."""
-    
-    def __init__(self, watcher):
+    """Handle file system change events."""
+
+    def __init__(self, watcher: FileWatcher):
+        """
+        Initialize handler.
+
+        Args:
+            watcher: FileWatcher instance.
+        """
         self.watcher = watcher
-        
-    def on_created(self, event):
+
+    def on_created(self, event) -> None:
         self.watcher._handle_event(event)
-        
-    def on_modified(self, event):
+
+    def on_modified(self, event) -> None:
         self.watcher._handle_event(event)
-        
-    def on_deleted(self, event):
+
+    def on_deleted(self, event) -> None:
         self.watcher._handle_event(event)
-        
-    def on_moved(self, event):
+
+    def on_moved(self, event) -> None:
         self.watcher._handle_event(event)

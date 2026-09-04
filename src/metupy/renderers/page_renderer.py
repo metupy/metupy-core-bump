@@ -1,37 +1,50 @@
-# metupy/renderers/page_renderer.py
-"""Page Renderer."""
+"""
+Page renderer for Metupy.
 
-from typing import Dict, Any, Optional
-from pathlib import Path
+Renders pages to HTML using Jinja2 templates.
+"""
+
+import markdown as md
+from typing import Any, Dict, Optional
+
 
 class PageRenderer:
-    """Renders pages."""
-    
+    """Render pages to HTML."""
+
     def __init__(self, engine):
+        """
+        Initialize PageRenderer.
+
+        Args:
+            engine: MetupyEngine instance.
+        """
         self.engine = engine
-        
+
     async def render(self, page, context: Optional[Dict] = None) -> str:
-        """Render page."""
+        """
+        Render page to HTML.
+
+        Args:
+            page: Page instance to render.
+            context: Optional rendering context override.
+
+        Returns:
+            Rendered HTML string.
+        """
         render_context = page.get_context()
+
         if context:
             render_context.update(context)
-            
-        # Execute before render hooks
-        render_context = await self.engine.plugin_manager.execute_hook(
-            'on_page_before_render',
-            page=page,
-            context=render_context
-        )
-        
-        # Render template
-        template = self.engine.template_env.get_template(page.template)
-        html = template.render(**render_context)
-        
-        # Execute after render hooks
-        html = await self.engine.plugin_manager.execute_hook(
-            'on_page_after_render',
-            page=page,
-            html=html
-        )
-        
-        return html
+
+        if page.content_type in ['pym', 'markdown']:
+            render_context['content'] = md.markdown(
+                page.content,
+                extensions=['extra', 'tables', 'fenced_code']
+            )
+
+        template_env = getattr(self.engine, 'template_env', None)
+        if not template_env:
+            return render_context.get('content', '')
+
+        template = template_env.get_template(page.template)
+        return template.render(**render_context)

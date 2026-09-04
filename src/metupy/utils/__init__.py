@@ -1,5 +1,8 @@
-# metupy/utils/__init__.py
-"""Utilities for Metupy."""
+"""
+Utility functions for Metupy.
+
+Lazy imports for utility helpers.
+"""
 
 __all__ = [
     "slugify",
@@ -7,14 +10,29 @@ __all__ = [
     "read_file",
     "write_file",
     "copy_directory",
-    "FileWatcher",
+    "ensure_directory",
 ]
 
-def __getattr__(name):
-    if name in ["slugify", "format_date", "read_file", "write_file", "copy_directory"]:
-        from metupy.utils.helpers import slugify, format_date, read_file, write_file, copy_directory
+
+def __getattr__(name: str):
+    """
+    Lazy import for utility functions.
+
+    Args:
+        name: Attribute name.
+
+    Returns:
+        Utility function or raises AttributeError.
+    """
+    from metupy.utils.helpers import (
+        slugify,
+        format_date,
+        read_file,
+        write_file,
+        copy_directory,
+        ensure_directory,
+    )
+
+    if name in __all__:
         return locals()[name]
-    elif name == "FileWatcher":
-        from metupy.utils.file_watcher import FileWatcher
-        return FileWatcher
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

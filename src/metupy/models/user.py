@@ -1,15 +1,23 @@
-# metupy/models/user.py
-"""User model dengan UUID."""
+"""
+User model for Metupy.
+
+Stores user accounts with UUID4 primary keys.
+"""
+
+import hashlib
+import secrets
+import uuid
+from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
 
 from peewee import CharField, TextField, BooleanField, DateTimeField, UUIDField
-from datetime import datetime, timedelta
+
 from metupy.models.base import BaseModel
-import hashlib
-import uuid
+
 
 class User(BaseModel):
-    """User model."""
-    
+    """User account model."""
+
     id = UUIDField(primary_key=True, default=uuid.uuid4)
     username = CharField(unique=True, max_length=100)
     email = CharField(unique=True, max_length=255)
@@ -22,66 +30,125 @@ class User(BaseModel):
     is_staff = BooleanField(default=False)
     is_superuser = BooleanField(default=False)
     last_login = DateTimeField(null=True)
-    
-    # Additional fields
     email_verified = BooleanField(default=False)
-    email_verification_token = CharField(max_length=255, null=True)
-    password_reset_token = CharField(max_length=255, null=True)
-    password_reset_expires = DateTimeField(null=True)
-    
+    verification_token = CharField(max_length=255, null=True)
+    reset_token = CharField(max_length=255, null=True)
+    reset_expires = DateTimeField(null=True)
+
     class Meta:
         table_name = 'users'
-        
+
     @staticmethod
     def hash_password(password: str) -> str:
-        """Hash password."""
-        return hashlib.sha256(password.encode()).hexdigest()
-        
-    def set_password(self, password: str):
-        """Set password."""
+        """
+        Hash password using SHA-256 with salt.
+
+        Args:
+            password: Plain password.
+
+        Returns:
+            Salted hash string.
+        """
+        salt = secrets.token_hex(16)
+        hashed = password + salt
+        for _ in range(1000):
+            hashed = hashlib.sha256(hashed.encode()).hexdigest()
+        return f"{salt}${hashed}"
+
+    def set_password(self, password: str) -> None:
+        """
+        Set user password.
+
+        Args:
+            password: Plain password.
+        """
         self.password_hash = self.hash_password(password)
-        
+
     def check_password(self, password: str) -> bool:
-        """Check password."""
-        return self.password_hash == self.hash_password(password)
-        
-    def generate_verification_token(self):
-        """Generate email verification token."""
-        self.email_verification_token = str(uuid.uuid4())
+        """
+        Verify password.
+
+        Args:
+            password: Plain password to check.
+
+        Returns:
+            True if password matches.
+        """
+        try:
+            salt, original_hash = self.password_hash.split('$')
+            hashed = password + salt
+            for _ in range(1000):
+                hashed = hashlib.sha256(hashed.encode()).hexdigest()
+            return hashed == original_hash
+        except (ValueError, AttributeError):
+            return False
+
+    def generate_verification_token(self) -> str:
+        """
+        Generate email verification token.
+
+        Returns:
+            Verification token string.
+        """
+        self.verification_token = str(uuid.uuid4())
         self.save()
-        return self.email_verification_token
-        
+        return self.verification_token
+
     def verify_email(self, token: str) -> bool:
-        """Verify email."""
-        if self.email_verification_token == token:
+        """
+        Verify email with token.
+
+        Args:
+            token: Verification token.
+
+        Returns:
+            True if token matches.
+        """
+        if self.verification_token == token:
             self.email_verified = True
-            self.email_verification_token = None
+            self.verification_token = None
             self.save()
             return True
         return False
-        
-    def generate_password_reset_token(self):
-        """Generate password reset token."""
-        self.password_reset_token = str(uuid.uuid4())
-        self.password_reset_expires = datetime.now() + timedelta(hours=1)
+
+    def generate_reset_token(self) -> str:
+        """
+        Generate password reset token.
+
+        Returns:
+            Reset token string.
+        """
+        self.reset_token = str(uuid.uuid4())
+        self.reset_expires = datetime.now() + timedelta(hours=1)
         self.save()
-        return self.password_reset_token
-        
+        return self.reset_token
+
     def reset_password(self, token: str, new_password: str) -> bool:
-        """Reset password."""
-        if (
-            self.password_reset_token == token and
-            self.password_reset_expires > datetime.now()
-        ):
+        """
+        Reset password with token.
+
+        Args:
+            token: Reset token.
+            new_password: New password.
+
+        Returns:
+            True if reset successful.
+        """
+        if self.reset_token == token and self.reset_expires and self.reset_expires > datetime.now():
             self.set_password(new_password)
-            self.password_reset_token = None
-            self.password_reset_expires = None
+            self.reset_token = None
+            self.reset_expires = None
             self.save()
             return True
         return False
-        
-    def to_dict(self):
-        """Convert to dictionary."""
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert user to dictionary.
+
+        Returns:
+            Dictionary representation.
+        """
         return {
             'id': str(self.id),
             'username': self.username,

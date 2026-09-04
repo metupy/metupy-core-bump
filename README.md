@@ -106,7 +106,7 @@ File: pages/index.py
 ### PYM Content
 
 File: content/index.pym
-```pym
+```text
     ---
     title: Home
     template: default.html
@@ -144,23 +144,11 @@ File: plugins/my-plugin/plugin.py
     ├── templates/
     │   ├── base.html
     │   └── default.html
-    └── static/
-        ├── css/
-        └── js/
 ```
-
-## Documentation
-
-Visit [metupy.com](https://metupy.palembangpy.org) for full documentation.
-
-## Contributing
-
-Contributions are welcome! See CONTRIBUTING.md for guidelines.
 
 ## License
 
 MIT License - See LICENSE for details.
-
 <p align="center">
   <img src="https://img.shields.io/badge/Made%20with-Python-3776AB?style=flat-square" alt="Made with Python">
   <br><br>

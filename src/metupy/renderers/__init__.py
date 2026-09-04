@@ -1,5 +1,8 @@
-# metupy/renderers/__init__.py
-"""Renderers for Metupy."""
+"""
+Renderers for Metupy.
+
+Lazy imports to avoid circular dependencies.
+"""
 
 __all__ = [
     "PageRenderer",
@@ -8,7 +11,17 @@ __all__ = [
     "SlidesRenderer",
 ]
 
-def __getattr__(name):
+
+def __getattr__(name: str):
+    """
+    Lazy import for renderer classes.
+
+    Args:
+        name: Attribute name.
+
+    Returns:
+        Renderer class or raises AttributeError.
+    """
     if name == "PageRenderer":
         from metupy.renderers.page_renderer import PageRenderer
         return PageRenderer

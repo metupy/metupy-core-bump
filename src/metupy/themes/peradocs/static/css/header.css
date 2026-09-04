@@ -1,0 +1,185 @@
+/* ==========================================
+   PERADOCS HEADER & NAVBAR STYLES
+========================================== */
+header {
+  width: 100%;
+  height: 4rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999999;
+  background-color: var(--metu-bg-header);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--metu-border-color);
+}
+
+.metu-header-container {
+  max-width: 1520px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metu-left-action {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.metu-brand a {
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--metu-blue);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Navigation dropdown */
+.metu-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.metu-dropdown {
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.metu-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+  color: var(--metu-text-primary);
+  cursor: pointer;
+}
+
+.metu-dropdown-trigger i {
+  font-size: 1.1rem;
+  color: var(--metu-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.metu-dropdown:hover .metu-dropdown-trigger {
+  color: var(--metu-yellow-dark);
+}
+
+.metu-dropdown:hover .metu-dropdown-trigger i {
+  transform: rotate(180deg);
+  color: var(--metu-yellow-dark);
+}
+
+.metu-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  background-color: var(--metu-bg-modal);
+  border: 1px solid var(--metu-border-color);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: all 0.2s ease-in-out;
+}
+
+.metu-dropdown:hover .metu-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.metu-dropdown-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.metu-dropdown-menu a:hover {
+  background-color: var(--metu-bg-input);
+  color: var(--metu-blue);
+}
+
+/* Right actions */
+.metu-right-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.metu-icon-btn {
+  background: transparent;
+  border: 1px solid var(--metu-border-color);
+  border-radius: 0.5rem;
+  padding: 0.45rem;
+  cursor: pointer;
+  color: var(--metu-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.metu-icon-btn:hover {
+  background-color: var(--metu-bg-input);
+  color: var(--metu-yellow-dark);
+}
+
+.metu-desktop-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--metu-bg-input);
+  border: 1px solid var(--metu-border-color);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  color: var(--metu-text-muted);
+  font-size: 0.9rem;
+}
+
+.metu-desktop-search:hover {
+  border-color: var(--metu-blue);
+}
+
+.metu-search-shortcut {
+  background: var(--metu-bg-primary);
+  border: 1px solid var(--metu-border-color);
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.75rem;
+}
+
+.metu-mobile-menu-btn,
+.metu-mobile-search-btn,
+.metu-mobile-toc-btn {
+  display: none !important;
+}
+
+/* Mobile nav overlay */
+.metu-nav-overlay {
+  display: none;
+  position: fixed;
+  top: 3.5rem;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 3.5rem);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999998;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.metu-nav-overlay.metu-active {
+  opacity: 1;
+  visibility: visible;
+}

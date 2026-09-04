@@ -1,0 +1,27 @@
+{
+    "name": "peradocs",
+    "version": "1.0.0",
+    "description": "Peradocs - Clean documentation theme for Metupy",
+    "author": "Metupy Team",
+    "license": "MIT",
+    "features": [
+        "dark-mode",
+        "search",
+        "sidebar",
+        "toc",
+        "responsive",
+        "syntax-highlighting"
+    ],
+    "settings": {
+        "colors": {
+            "yellow": "#F0C135",
+            "blue": "#3B6F96",
+            "blue-dark": "#223241",
+            "yellow-dark": "#D0A62D"
+        },
+        "fonts": {
+            "body": "Plus Jakarta Sans, Poppins, sans-serif",
+            "code": "Fira Code, monospace"
+        }
+    }
+}

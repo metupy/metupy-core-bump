@@ -1,0 +1,68 @@
+/* ==========================================
+   PERADOCS CORE - Variables & Base Styles
+========================================== */
+:root {
+  --metu-yellow: #F0C135;
+  --metu-blue: #3B6F96;
+  --metu-blue-dark: #223241;
+  --metu-yellow-dark: #D0A62D;
+
+  --metu-yellow-shadow: rgba(240, 193, 53, 0.3);
+  --metu-blue-shadow: rgba(59, 111, 150, 0.3);
+
+  --metu-bg-primary: #ffffff;
+  --metu-bg-header: rgba(255, 255, 255, 0.85);
+  --metu-bg-input: #f1f5f9;
+  --metu-bg-modal: #ffffff;
+  --metu-text-primary: #1e293b;
+  --metu-text-muted: #64748b;
+  --metu-border-color: #e2e8f0;
+}
+
+[data-theme="dark"] {
+  --metu-bg-primary: #0f172a;
+  --metu-bg-header: rgba(15, 23, 42, 0.85);
+  --metu-bg-input: #1e293b;
+  --metu-bg-modal: #1e293b;
+  --metu-text-primary: #f8fafc;
+  --metu-text-muted: #94a3b8;
+  --metu-border-color: #334155;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--metu-bg-primary);
+  color: var(--metu-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--metu-text-primary);
+}
+
+::selection {
+  background-color: var(--metu-yellow-shadow);
+  color: var(--metu-blue-dark);
+}
+
+[data-theme="dark"] ::selection {
+  background-color: var(--metu-blue);
+  color: #ffffff;
+}
+
+body.metu-docs-page {
+  background-color: var(--metu-bg-primary);
+}

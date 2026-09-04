@@ -1,0 +1,10 @@
+<aside class="metu-docs-toc" id="metu-toc-menu">
+    <div class="metu-toc-title">On This Page</div>
+    <nav id="metu-toc-list">
+        {% for item in toc_items %}
+        <a href="#{{ item.anchor }}" data-target="{{ item.anchor }}" class="{% if item.level == 3 %}metu-toc-sub{% endif %}">
+            {{ item.title }}
+        </a>
+        {% endfor %}
+    </nav>
+</aside>

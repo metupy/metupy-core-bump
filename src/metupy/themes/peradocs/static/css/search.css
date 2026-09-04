@@ -1,0 +1,113 @@
+/* ==========================================
+   PERADOCS SEARCH MODAL STYLES
+========================================== */
+.metu-search-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 10vh;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.metu-search-modal-overlay.metu-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.metu-search-modal-container {
+  background-color: var(--metu-bg-modal);
+  border: 1px solid var(--metu-border-color);
+  width: 100%;
+  max-width: 640px;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+.metu-search-modal-overlay.metu-active .metu-search-modal-container {
+  transform: scale(1);
+}
+
+.metu-search-modal-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--metu-border-color);
+  gap: 0.75rem;
+}
+
+.metu-search-input-icon {
+  font-size: 1.4rem;
+  color: var(--metu-blue);
+}
+
+.metu-search-modal-header input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1.1rem;
+  color: var(--metu-text-primary);
+}
+
+.metu-close-modal-btn {
+  background: var(--metu-bg-input);
+  border: 1px solid var(--metu-border-color);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--metu-text-muted);
+  cursor: pointer;
+}
+
+.metu-search-modal-body {
+  padding: 1.5rem;
+  min-height: 200px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.metu-search-results-placeholder {
+  text-align: center;
+  color: var(--metu-text-muted);
+  padding: 2rem 0;
+}
+
+.metu-search-results-placeholder i {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.metu-search-results a {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  margin-bottom: 0.25rem;
+}
+
+.metu-search-results a:hover {
+  background-color: var(--metu-bg-input);
+}
+
+.metu-search-results .metu-search-title {
+  font-weight: 600;
+  color: var(--metu-blue);
+}
+
+.metu-search-results .metu-search-desc {
+  font-size: 0.85rem;
+  color: var(--metu-text-muted);
+}

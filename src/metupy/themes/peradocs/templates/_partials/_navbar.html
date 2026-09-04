@@ -1,0 +1,18 @@
+<nav class="metu-nav-group" id="metu-nav-menu">
+    {% for item in nav %}
+    <div class="metu-dropdown">
+        {% if item.children %}
+        <a href="{{ item.url }}" class="metu-dropdown-trigger">
+            {{ item.title }} <i class="bx bx-chevron-down"></i>
+        </a>
+        <div class="metu-dropdown-menu">
+            {% for child in item.children %}
+            <a href="{{ child.url }}">{{ child.title }}</a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <a href="{{ item.url }}" class="metu-dropdown-trigger">{{ item.title }}</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</nav>

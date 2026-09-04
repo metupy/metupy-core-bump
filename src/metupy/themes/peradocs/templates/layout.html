@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block body_class %}metu-docs-page{% endblock %}
+
+{% block content %}
+<div class="metu-docs-layout">
+
+    {% include "_partials/_sidebar.html" %}
+
+    <main class="metu-docs-content">
+        <h1>{{ title }}</h1>
+
+        {% if metadata.description %}
+        <p class="metu-lead">{{ metadata.description }}</p>
+        {% endif %}
+
+        <div class="metu-callout">
+            <i class="bx bx-info-circle"></i>
+            <div><strong>Note:</strong> Built with Metupy.</div>
+        </div>
+
+        {{ content | safe }}
+
+        {% include "_partials/_edit_this_page.html" %}
+
+        {% if prev_doc or next_doc %}
+        <div class="metu-doc-footer-nav">
+            {% if prev_doc %}
+            <a href="{{ prev_doc.url }}" class="metu-nav-card metu-prev-card">
+                <span class="metu-nav-label"><i class="bx bx-chevron-left"></i> Previous</span>
+                <span class="metu-nav-title">{{ prev_doc.title }}</span>
+            </a>
+            {% endif %}
+
+            {% if next_doc %}
+            <a href="{{ next_doc.url }}" class="metu-nav-card metu-next-card">
+                <span class="metu-nav-label">Next <i class="bx bx-chevron-right"></i></span>
+                <span class="metu-nav-title">{{ next_doc.title }}</span>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </main>
+
+    {% include "_partials/_toc.html" %}
+
+</div>
+
+{% include "_partials/_footer.html" %}
+{% endblock %}
