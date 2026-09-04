@@ -1,6 +1,153 @@
 /* ==========================================
-   PERADOCS CONTENT STYLES
+   METUPY PERADOCS - CONTENT & DOCS LAYOUT
 ========================================== */
+
+main {
+  width: 100%;
+  min-height: calc(100vh - 4rem);
+  margin-top: 4rem;
+}
+
+.metu-hero-container {
+  max-width: 1520px;
+  margin: 0 auto;
+  padding: 4rem 2rem 5rem 2rem;
+  text-align: center;
+}
+
+.metu-hero-logo {
+  margin-bottom: 1.5rem;
+}
+
+.metu-hero-logo img {
+  width: 280px;
+  height: auto;
+  max-width: 100%;
+  filter: drop-shadow(0 15px 25px var(--metu-yellow-shadow));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.metu-hero-logo img:hover {
+  transform: scale(1.04);
+}
+
+.metu-hero-title {
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--metu-text-primary);
+  margin-top: 0.5rem;
+  line-height: 1.15;
+}
+
+.metu-hero-tagline {
+  font-size: 1.6rem;
+  color: var(--metu-text-muted);
+  margin: 1.25rem auto 2.5rem auto;
+  max-width: 750px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.metu-hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-bottom: 3.5rem;
+}
+
+.metu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.metu-btn-primary {
+  background-color: var(--metu-yellow);
+  color: var(--metu-blue-dark);
+  box-shadow: 0 6px 20px var(--metu-yellow-shadow);
+  border: 1px solid transparent;
+}
+
+.metu-btn-primary:hover {
+  background-color: var(--metu-yellow-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px var(--metu-yellow-shadow);
+}
+
+.metu-btn-secondary {
+  background-color: transparent;
+  color: var(--metu-blue);
+  border: 2px solid var(--metu-blue);
+}
+
+.metu-btn-secondary:hover {
+  background-color: var(--metu-blue);
+  color: #ffffff;
+  transform: translateY(-3px);
+}
+
+[data-theme="dark"] .metu-btn-secondary {
+  color: var(--metu-yellow);
+  border-color: var(--metu-yellow);
+}
+
+[data-theme="dark"] .metu-btn-secondary:hover {
+  background-color: var(--metu-yellow);
+  color: var(--metu-blue-dark);
+}
+
+.metu-hero-divider {
+  border: none;
+  border-top: 1px solid var(--metu-border-color);
+  margin: 3.5rem 0;
+}
+
+.metu-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  text-align: left;
+  padding: 1rem 0;
+}
+
+.metu-feature-card {
+  padding: 0.5rem;
+}
+
+.metu-feature-card h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--metu-blue);
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+[data-theme="dark"] .metu-feature-card h2 {
+  color: var(--metu-yellow);
+}
+
+.metu-feature-card p {
+  font-size: 1.05rem;
+  color: var(--metu-text-muted);
+  line-height: 1.65;
+}
+
+.metu-hero-footer {
+  margin-top: 5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--metu-border-color);
+  font-size: 0.95rem;
+  color: var(--metu-text-muted);
+}
+
 .metu-docs-layout {
   display: flex;
   max-width: 1520px;
@@ -19,7 +166,6 @@
   font-size: 2.5rem;
   letter-spacing: -0.02em;
   font-weight: 700;
-  margin-top: 4rem;
   margin-bottom: 0.5rem;
 }
 
@@ -58,7 +204,7 @@
 }
 
 .metu-docs-content code {
-  font-family: 'Fira Code', monospace;
+  font-family: monospace;
   font-size: 0.9rem;
   color: var(--metu-blue);
 }
@@ -91,14 +237,39 @@
   color: var(--metu-yellow);
 }
 
-/* Page content (non-docs) */
-.metu-page-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
+.metu-heading-anchor {
+  scroll-margin-top: 5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* Doc footer nav */
+.metu-heading-text {
+  order: 1;
+}
+
+.metu-heading-anchor .header-anchor {
+  order: 2;
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--metu-yellow-dark, #e6a100);
+  opacity: 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  user-select: none;
+  transform: translateX(-4px);
+}
+
+[data-theme="dark"] .metu-heading-anchor .header-anchor {
+  color: var(--metu-yellow, #f7d000);
+}
+
+.metu-heading-anchor:hover .header-anchor,
+.metu-heading-anchor .header-anchor:focus {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 .metu-doc-footer-nav {
   display: flex;
   justify-content: space-between;
@@ -159,4 +330,28 @@
 
 [data-theme="dark"] .metu-nav-title {
   color: var(--metu-yellow);
+}
+
+.metu-nav-card.metu-disabled {
+  display: none;
+}
+
+/* Edit this page */
+.metu-edit-this-page {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--metu-border-color);
+}
+
+.metu-edit-this-page a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--metu-blue);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.metu-edit-this-page a:hover {
+  color: var(--metu-yellow-dark);
 }

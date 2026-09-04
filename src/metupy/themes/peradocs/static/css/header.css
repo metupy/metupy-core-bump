@@ -1,6 +1,7 @@
 /* ==========================================
-   PERADOCS HEADER & NAVBAR STYLES
+   METUPY PERADOCS - HEADER & NAVIGATION
 ========================================== */
+
 header {
   width: 100%;
   height: 4rem;
@@ -38,7 +39,6 @@ header {
   align-items: center;
 }
 
-/* Navigation dropdown */
 .metu-nav-group {
   display: flex;
   align-items: center;
@@ -56,7 +56,6 @@ header {
   gap: 0.25rem;
   font-weight: 500;
   color: var(--metu-text-primary);
-  cursor: pointer;
 }
 
 .metu-dropdown-trigger i {
@@ -107,7 +106,6 @@ header {
   color: var(--metu-blue);
 }
 
-/* Right actions */
 .metu-right-action {
   display: flex;
   align-items: center;
@@ -162,24 +160,4 @@ header {
 .metu-mobile-search-btn,
 .metu-mobile-toc-btn {
   display: none !important;
-}
-
-/* Mobile nav overlay */
-.metu-nav-overlay {
-  display: none;
-  position: fixed;
-  top: 3.5rem;
-  left: 0;
-  width: 100vw;
-  height: calc(100vh - 3.5rem);
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999998;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-}
-
-.metu-nav-overlay.metu-active {
-  opacity: 1;
-  visibility: visible;
 }

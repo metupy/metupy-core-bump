@@ -31,26 +31,6 @@ if (themeToggleBtn) {
     });
 }
 
-// Mobile navigation
-const menuToggleBtn = document.getElementById('metu-menu-toggle');
-const menuIcon = document.getElementById('metu-menu-icon');
-const navMenu = document.getElementById('metu-nav-menu');
-const navOverlay = document.getElementById('metu-nav-overlay');
-
-function toggleMobileMenu() {
-    navMenu.classList.toggle('metu-active');
-    navOverlay.classList.toggle('metu-active');
-
-    if (navMenu.classList.contains('metu-active')) {
-        menuIcon.classList.replace('bx-menu', 'bx-x');
-    } else {
-        menuIcon.classList.replace('bx-x', 'bx-menu');
-    }
-}
-
-if (menuToggleBtn) menuToggleBtn.addEventListener('click', toggleMobileMenu);
-if (navOverlay) navOverlay.addEventListener('click', toggleMobileMenu);
-
 // Search modal
 const searchModal = document.getElementById('metu-search-modal');
 const desktopSearchTrigger = document.getElementById('metu-search-modal-trigger');
@@ -153,16 +133,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (tocToggleBtn && tocMenu) {
-        tocToggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            tocMenu.classList.toggle('metu-mobile-toc-active');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!tocMenu.contains(e.target) && !tocToggleBtn.contains(e.target)) {
-                tocMenu.classList.remove('metu-mobile-toc-active');
-            }
-        });
-    }
 });

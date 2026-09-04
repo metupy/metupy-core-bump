@@ -2,11 +2,14 @@
  * Peradocs TOC - Table of Contents Generation
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initTableOfContents() {
     const articleContent = document.querySelector('.metu-docs-content');
     const tocList = document.getElementById('metu-toc-list');
     const tocToggleBtn = document.getElementById('metu-toc-toggle');
     const tocMenu = document.getElementById('metu-toc-menu');
+    const navOverlay = document.getElementById('metu-nav-overlay');
+    if (!tocToggleBtn || !tocMenu || window.__metupyTocInitialized) return;
+    window.__metupyTocInitialized = true;
 
     if (articleContent && tocList) {
         const headings = articleContent.querySelectorAll('h2, h3');
@@ -74,15 +77,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mobile TOC toggle
     if (tocToggleBtn && tocMenu) {
-        tocToggleBtn.addEventListener('click', (e) => {
+        tocToggleBtn.onclick = (e) => {
             e.stopPropagation();
+            const sidebar = document.querySelector('.metu-docs-sidebar');
+            const navMenu = document.getElementById('metu-nav-menu');
+            if (sidebar) sidebar.classList.remove('metu-mobile-sidebar-active');
+            if (navMenu) navMenu.classList.remove('metu-active');
             tocMenu.classList.toggle('metu-mobile-toc-active');
-        });
+            if (navOverlay) navOverlay.classList.toggle('metu-active', tocMenu.classList.contains('metu-mobile-toc-active'));
+        };
+        tocToggleBtn.ontouchend = (e) => {
+            e.preventDefault();
+            tocToggleBtn.onclick(e);
+        };
 
-        document.addEventListener('click', (e) => {
-            if (!tocMenu.contains(e.target) && !tocToggleBtn.contains(e.target)) {
+        tocList.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
                 tocMenu.classList.remove('metu-mobile-toc-active');
-            }
+                if (navOverlay) navOverlay.classList.remove('metu-active');
+            });
         });
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTableOfContents);
+    setTimeout(initTableOfContents, 100);
+} else {
+    initTableOfContents();
+}

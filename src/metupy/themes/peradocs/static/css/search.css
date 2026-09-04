@@ -1,6 +1,7 @@
 /* ==========================================
-   PERADOCS SEARCH MODAL STYLES
+   METUPY PERADOCS - SEARCH MODAL
 ========================================== */
+
 .metu-search-modal-overlay {
   position: fixed;
   top: 0;
@@ -73,41 +74,19 @@
 }
 
 .metu-search-modal-body {
-  padding: 1.5rem;
+  padding: 3rem 1.5rem;
   min-height: 200px;
-  max-height: 60vh;
-  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .metu-search-results-placeholder {
   text-align: center;
   color: var(--metu-text-muted);
-  padding: 2rem 0;
 }
 
 .metu-search-results-placeholder i {
   font-size: 3rem;
   margin-bottom: 0.5rem;
-}
-
-.metu-search-results a {
-  display: block;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
-  margin-bottom: 0.25rem;
-}
-
-.metu-search-results a:hover {
-  background-color: var(--metu-bg-input);
-}
-
-.metu-search-results .metu-search-title {
-  font-weight: 600;
-  color: var(--metu-blue);
-}
-
-.metu-search-results .metu-search-desc {
-  font-size: 0.85rem;
-  color: var(--metu-text-muted);
 }

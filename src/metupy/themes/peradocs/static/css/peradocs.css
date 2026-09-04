@@ -1,6 +1,7 @@
 /* ==========================================
-   PERADOCS CORE - Variables & Base Styles
+   METUPY PERADOCS - CORE VARIABLES & BASE
 ========================================== */
+
 :root {
   --metu-yellow: #F0C135;
   --metu-blue: #3B6F96;
@@ -42,6 +43,10 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body.home-page #metu-toc-toggle {
+  display: none !important;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -61,8 +66,4 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme="dark"] ::selection {
   background-color: var(--metu-blue);
   color: #ffffff;
-}
-
-body.metu-docs-page {
-  background-color: var(--metu-bg-primary);
 }

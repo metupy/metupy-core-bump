@@ -2,25 +2,58 @@
  * Peradocs Header - Mobile Navigation & Dropdown
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initMobileNavigation() {
     const menuToggleBtn = document.getElementById('metu-menu-toggle');
     const menuIcon = document.getElementById('metu-menu-icon');
     const navMenu = document.getElementById('metu-nav-menu');
     const navOverlay = document.getElementById('metu-nav-overlay');
+    const docsSidebar = document.querySelector('.metu-docs-sidebar');
+    if (!menuToggleBtn || window.__metupyNavigationInitialized) return;
+    window.__metupyNavigationInitialized = true;
 
-    function toggleMobileMenu() {
-        if (navMenu) navMenu.classList.toggle('metu-active');
-        if (navOverlay) navOverlay.classList.toggle('metu-active');
-
-        if (navMenu && navMenu.classList.contains('metu-active')) {
-            if (menuIcon) menuIcon.classList.replace('bx-menu', 'bx-x');
-        } else {
-            if (menuIcon) menuIcon.classList.replace('bx-x', 'bx-menu');
-        }
+    function closeMobileMenu() {
+        if (navMenu) navMenu.classList.remove('metu-active');
+        if (docsSidebar) docsSidebar.classList.remove('metu-mobile-sidebar-active');
+        if (navOverlay) navOverlay.classList.remove('metu-active');
+        if (menuIcon) menuIcon.classList.replace('bx-x', 'bx-menu');
     }
 
-    if (menuToggleBtn) menuToggleBtn.addEventListener('click', toggleMobileMenu);
-    if (navOverlay) navOverlay.addEventListener('click', toggleMobileMenu);
+    function toggleMobileMenu() {
+        const activeMenu = docsSidebar || navMenu;
+        const activeClass = docsSidebar ? 'metu-mobile-sidebar-active' : 'metu-active';
+        const isOpen = activeMenu && activeMenu.classList.contains(activeClass);
+        if (isOpen) {
+            closeMobileMenu();
+            return;
+        }
+        if (docsSidebar) {
+            docsSidebar.classList.add('metu-mobile-sidebar-active');
+        } else if (navMenu) {
+            navMenu.classList.add('metu-active');
+        }
+        if (navOverlay) navOverlay.classList.add('metu-active');
+
+        if (menuIcon) menuIcon.classList.replace('bx-menu', 'bx-x');
+    }
+
+    menuToggleBtn.onclick = toggleMobileMenu;
+    menuToggleBtn.ontouchend = (event) => {
+        event.preventDefault();
+        toggleMobileMenu();
+    };
+    if (navOverlay) navOverlay.onclick = () => {
+        closeMobileMenu();
+        const tocMenu = document.getElementById('metu-toc-menu');
+        if (tocMenu) tocMenu.classList.remove('metu-mobile-toc-active');
+    };
+
+    if (docsSidebar) {
+        docsSidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                closeMobileMenu();
+            });
+        });
+    }
 
     // Mobile dropdown accordion
     const dropdowns = document.querySelectorAll('.metu-dropdown');
@@ -35,4 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileNavigation);
+    setTimeout(initMobileNavigation, 100);
+} else {
+    initMobileNavigation();
+}

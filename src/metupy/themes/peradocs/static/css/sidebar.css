@@ -1,6 +1,7 @@
 /* ==========================================
-   PERADOCS SIDEBAR STYLES
+   METUPY PERADOCS - SIDEBAR
 ========================================== */
+
 .metu-docs-sidebar {
   width: 240px;
   flex-shrink: 0;
@@ -31,28 +32,16 @@
 
 .metu-sidebar-group ul {
   list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.metu-sidebar-group > ul > li {
-  margin: 0.1rem 0;
 }
 
 .metu-sidebar-group a {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: block;
   padding: 0.4rem 0.6rem;
+  margin: 0.1rem 0;
   font-size: 0.9rem;
   color: var(--metu-text-primary);
   border-radius: 0.375rem;
   transition: all 0.2s ease;
-}
-
-.metu-sidebar-group a i {
-  font-size: 1rem;
-  color: var(--metu-text-muted);
 }
 
 .metu-sidebar-group a:hover {
@@ -69,64 +58,4 @@
 [data-theme="dark"] .metu-sidebar-group a.metu-active {
   background-color: var(--metu-blue-shadow);
   color: var(--metu-text-primary);
-}
-
-/* Folder dropdown */
-.metu-sidebar-folder {
-  margin: 0.1rem 0;
-}
-
-.metu-folder-trigger {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.4rem 0.6rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--metu-text-primary);
-  background: transparent;
-  border: none;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.metu-folder-trigger:hover {
-  background-color: var(--metu-bg-input);
-  color: var(--metu-blue-dark);
-}
-
-.metu-folder-trigger i:first-child {
-  font-size: 1rem;
-  color: var(--metu-yellow-dark);
-}
-
-.metu-folder-arrow {
-  margin-left: auto;
-  font-size: 1rem;
-  color: var(--metu-text-muted);
-  transition: transform 0.3s ease;
-}
-
-.metu-sidebar-folder.metu-folder-open .metu-folder-arrow {
-  transform: rotate(180deg);
-}
-
-.metu-folder-items {
-  list-style: none;
-  padding-left: 1.5rem;
-  margin: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.metu-sidebar-folder.metu-folder-open .metu-folder-items {
-  max-height: 500px;
-}
-
-.metu-folder-items a {
-  font-size: 0.85rem;
-  padding: 0.35rem 0.5rem;
 }

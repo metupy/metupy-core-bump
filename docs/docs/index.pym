@@ -1,0 +1,14 @@
+---
+title: Home
+template: layout.html
+type: docs
+order: 0
+---
+
+# Welcome to Documentation
+
+This is your documentation site built with Metupy.
+
+## Getting Started
+
+Write your documentation here using Markdown.

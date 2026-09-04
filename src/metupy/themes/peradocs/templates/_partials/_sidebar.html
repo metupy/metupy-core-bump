@@ -3,7 +3,7 @@
     <div class="metu-sidebar-group">
         <h3>{{ group.title }}</h3>
         <ul>
-            {% for item in group.items %}
+            {% for item in group['items'] %}
             {% if item.is_folder %}
             <li class="metu-sidebar-folder">
                 <button class="metu-folder-trigger" data-folder="{{ item.title | slugify }}">

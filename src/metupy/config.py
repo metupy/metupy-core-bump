@@ -128,7 +128,7 @@ class ConfigLoader:
 
     def _load_config(self) -> None:
         """Load configuration from pymconfig.py file."""
-        config_dir = str(self.config_path.parent)
+        config_dir = str(self.config_path.parent) # type: ignore
         if config_dir not in sys.path:
             sys.path.insert(0, config_dir)
 
@@ -137,7 +137,7 @@ class ConfigLoader:
             spec = importlib.util.spec_from_file_location(
                 "pymconfig",
                 self.config_path,
-                encoding='utf-8'
+                encoding='utf-8' # type: ignore
             )
         except TypeError:
             # Fallback for older Python versions
@@ -146,8 +146,8 @@ class ConfigLoader:
                 self.config_path
             )
 
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        module = importlib.util.module_from_spec(spec) # type: ignore
+        spec.loader.exec_module(module) # type: ignore
 
         self._config = {
             key: value
@@ -155,7 +155,7 @@ class ConfigLoader:
             if key.isupper() and not key.startswith('_')
         }
 
-        self._config['BASE_DIR'] = self.config_path.parent
+        self._config['BASE_DIR'] = self.config_path.parent # type: ignore
 
     def get(self, key: str, default: Any = None) -> Any:
         """
@@ -228,7 +228,7 @@ class ConfigLoader:
 _config_instance: Optional[ConfigLoader] = None
 
 
-def get_config() -> ConfigLoader:
+def get_config(config_file: Optional[str] = None) -> ConfigLoader:
     """
     Get or create global config instance.
 
@@ -236,6 +236,8 @@ def get_config() -> ConfigLoader:
         ConfigLoader instance.
     """
     global _config_instance
+    if config_file is not None:
+        return load_config(config_file)
     if _config_instance is None:
         _config_instance = ConfigLoader()
     return _config_instance

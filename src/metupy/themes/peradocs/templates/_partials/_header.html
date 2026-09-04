@@ -6,13 +6,11 @@
             </button>
             <div class="metu-brand">
                 <a href="/">
-                    <img src="/favicon.png" alt="{{ site.name }} Logo" width="32" height="32">
+                    <img src="/favicon.png?v={{ site.version }}" alt="{{ site.name }} Logo" width="32" height="32">
                     <span>{{ site.name }}</span>
                 </a>
             </div>
         </div>
-
-        <div class="metu-nav-overlay" id="metu-nav-overlay"></div>
 
         {% include "_partials/_navbar.html" %}
 
@@ -34,3 +32,4 @@
         </div>
     </div>
 </header>
+<div class="metu-nav-overlay" id="metu-nav-overlay"></div>

@@ -131,6 +131,7 @@ def create_parser() -> MetupyArgumentParser:
     serve_parser.add_argument('--host', default='localhost', help='Host to bind')
     serve_parser.add_argument('--port', type=int, default=3155, help='Port to bind')
     serve_parser.add_argument('--open-browser', action='store_true', help='Open browser automatically')
+    serve_parser.add_argument('--config', default='pymconfig.py', help='Configuration file path')
 
     build_parser = subparsers.add_parser(
         'build',
@@ -300,15 +301,13 @@ def _install_theme_to_workspace(theme_name: str = 'peradocs') -> None:
 def cmd_serve(args: argparse.Namespace) -> None:
     """Handle serve command."""
     from metupy.core.engine import MetupyEngine
-    from metupy.config import get_config
 
-    config = get_config()
+    engine = MetupyEngine(args.config)
+    config = engine.config
     if hasattr(config, 'DEV_HOST'):
-        config.DEV_HOST = args.host
+        config.DEV_HOST = args.host # type: ignore
     if hasattr(config, 'DEV_PORT'):
-        config.DEV_PORT = args.port
-
-    engine = MetupyEngine()
+        config.DEV_PORT = args.port # type: ignore
 
     console.print(f"[green]➜[/green] Starting server at [bold cyan]http://{args.host}:{args.port}[/bold cyan]")
 
@@ -332,7 +331,7 @@ def cmd_build(args: argparse.Namespace) -> None:
 
     config = get_config()
     if args.output:
-        config.OUTPUT_DIR = Path(args.output)
+        config.OUTPUT_DIR = Path(args.output) # type: ignore
 
     engine = MetupyEngine()
 
@@ -351,9 +350,9 @@ def cmd_studio(args: argparse.Namespace) -> None:
 
     config = get_config()
     if hasattr(config, 'STUDIO_PORT'):
-        config.STUDIO_PORT = args.port
+        config.STUDIO_PORT = args.port # type: ignore
     if hasattr(config, 'STUDIO_HOST'):
-        config.STUDIO_HOST = args.host
+        config.STUDIO_HOST = args.host # type: ignore
 
     engine = MetupyEngine()
 
@@ -363,7 +362,7 @@ def cmd_studio(args: argparse.Namespace) -> None:
         _open_browser_delayed(f'http://{args.host}:{args.port}')
 
     try:
-        asyncio.run(engine.start_studio())
+        asyncio.run(engine.start_studio()) # type: ignore
     except KeyboardInterrupt:
         console.print("\n[yellow]Studio stopped[/yellow]")
         sys.exit(0)
